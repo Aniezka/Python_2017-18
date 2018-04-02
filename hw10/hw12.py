@@ -1,3 +1,5 @@
+# Вариант 7
+
 import re
 
 def read_file():
