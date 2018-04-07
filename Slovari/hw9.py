@@ -2,10 +2,8 @@ import re
 
 
 def get_filename_and_length():
-    print("Введите имя файла:")
-    filename = input()
-    print("Введите количество букв")
-    length = int(input())
+    filename = input("Введите имя файла: ")
+    length = int(input("Введите количество букв: "))
     return filename, length
 
 
@@ -16,7 +14,7 @@ def fill_words_dict(filename):
         line_results = get_un_words(line)
         for word in line_results:
             if word.lower() not in words_dict:
-                words_dict[word] = 1
+                words_dict[word] = 0
             words_dict[word.lower()] += 1
     inputFile.close()
     return words_dict
