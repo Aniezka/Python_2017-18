@@ -2,52 +2,55 @@ import re
 
 
 def read_text_file(filename):
-
+    # открываем текстовый файл в кодировке utf-8
     with open(filename, 'r', encoding='utf-8') as text_file:
         file_str = text_file.read()
 
     return file_str
 
 
-def make_sentences(file_str):
+def make_fragments(file_str):
+    # делим текст на фрагменты
+    fragments = re.split(r'[.!?…]\s|\?!\s|[\n\r]', file_str)
 
-    file_str_corr = file_str.replace(u'\xa0', u' ')  # убираем возможные \xao, обозначающие пробелы в кодировке Unicode
-    sentences = re.split(r'[.!?…]\s|\?!\s|[\n\r]', file_str_corr)  # делим текст на предложения
-
-    return sentences
-
-
-def filter_sentence(sentence):
-
-    filtered_sentence = re.sub(r'[^А-Яа-я]+', ' ', sentence).lower().strip()  # убираем из предложения все, кроме слов
-
-    return filtered_sentence
+    return fragments
 
 
-def get_one_sentence_dict(sentence):
+def filter_fragment(fragment):
+    # убираем из фрагмента все, кроме слов - знаки препинания, кавычки, цифры
+    # и символы, которые могли возникнуть, если текст был переведен в utf-8 из другой кодировки
+    # (например, '\xa0')
+    filtered_fragment = re.sub(r'[^a-zа-яё]+', ' ', fragment, flags=re.I).lower().strip()
 
-    sentence_dict = {}  # в этом словаре будут храниться пары "слово: количество его вхождений"
-
-    for w in sentence.split():
-
-        if w not in sentence_dict:
-            sentence_dict[w] = 0
-
-        sentence_dict[w] += 1
-
-    return sentence_dict
+    return filtered_fragment
 
 
-def get_sentence_table(sentence):
+def get_fragment_dict(fragment):
+    # создаем словарь, в котором будут храниться пары "слово: количество его вхождений" для врагмента
+    fragment_dict = {}
 
-    f_sentence = filter_sentence(sentence)
-    s_dict = get_one_sentence_dict(f_sentence)
+    for w in fragment.split():
 
-    table_0 = 'Слова предложения: ' + f_sentence + '\n'  # исходная таблица
+        if w not in fragment_dict:
+            fragment_dict[w] = 0
+
+        fragment_dict[w] += 1
+
+    return fragment_dict
+
+
+def get_fragment_table(fragment):
+    # создадим таблицу, в которой будут указаны слова предложения и количество вхождений
+    # для слов, встречающихся более 1 раза
+    f_fragment = filter_fragment(fragment)
+    s_dict = get_fragment_dict(f_fragment)
+
+    table_0 = 'Слова предложения: ' + f_fragment + '\n'  # исходная таблица
     res_table = table_0  # таблица - результат, в которую будем записывать строчки
 
-    # с помощью list comprehension пройдемся по всем словам предложения и впишем в таблицу те, которые
+    # пройдемся по всем словам предложения и впишем в таблицу те, которые
     # встречаются более одного раза
+    # используется list comprehension и форматирование строк
     add_lines = ['{:^20}'.format(key) + '{:^5}'.format(str(s_dict[key])) + '\n' for key in s_dict if s_dict[key] > 1]
     res_table += ''.join(add_lines)
 
@@ -57,15 +60,16 @@ def get_sentence_table(sentence):
     return res_table + '\n'
 
 
-def get_result_line(sentences):
-
-    result_line = ''.join([get_sentence_table(s) for s in sentences if re.match('.*[а-я]+', s, re.I)])
+def get_result_line(fragments):
+    # объединяем в линию строчки таблицы, полученной для каждого предложения
+    # предложением считается фрагмент, содержащий буквы
+    # используется list comprehension
+    result_line = ''.join([get_fragment_table(s) for s in fragments if re.search('[a-zа-яё]+', s, flags=re.I)])
 
     return result_line
 
 
-# my_file_str = read_text_file('Belaya_gvardia_cut_utf-8.txt')
-my_file_str = read_text_file('test.txt')
-my_sentences = make_sentences(my_file_str)
-my_result_line = get_result_line(my_sentences)
+my_file_str = read_text_file(input('Введите имя файла: '))
+my_fragments = make_fragments(my_file_str)
+my_result_line = get_result_line(my_fragments)
 print(my_result_line)
