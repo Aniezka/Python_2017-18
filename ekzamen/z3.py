@@ -29,14 +29,15 @@ def find_NUM_gen(words_list, NUM_gen_dict):
 
             NUM_gen_dict[w] += 1
 
+    return NUM_gen_dict
 
 
 def write_file(words_dict):
 
-    with open('task_2_result.txt', 'w', encoding='cp1251') as f:
+    with open('task_3_result.txt', 'w', encoding='cp1251') as f:
 
         for key in words_dict:
-            f.write(key + '\t' + str(upper_words_dict[key]) + '\n')
+            f.write(key + '\t' + str(words_dict[key]) + '\n')
 
 
 content_list = os.listdir('news/')
