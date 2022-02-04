@@ -1,2 +1,2 @@
 # Python_2017-18
-Домашние задания по курсу по Python.
+Python course homework, bachelor's programme in Fundamental and Computational Linguistics (2017-2018).
